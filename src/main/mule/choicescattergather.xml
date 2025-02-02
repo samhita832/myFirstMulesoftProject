@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="77ec1358-308d-4ac5-8cd2-25e67c0cb5c4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="choicescattergatherFlow1" doc:id="a70bcbf5-fb45-49a6-af8a-e16f08a15058" >
+		<http:listener doc:name="Listener" doc:id="e3825797-e650-43c6-a594-d71a2a2bad44" config-ref="HTTP_Listener_config" path="/apit"/>
+		<set-payload value='#["London"]' doc:name="Set Payload" doc:id="f04f8e9d-312e-421a-bd9c-5ac065717ec2" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f00a143b-2492-42d6-96bb-4d9e10f9865f" >
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="6471184f-a9d1-4054-8dde-b0b36123f883" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"First target" ++ payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="b60c10e4-2c35-4fc8-a901-80eaa32a2b6e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+"Second target" ++ payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="4715f554-ea4d-4856-945d-04774ebf1b11" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7ab782eb-5fec-4923-8a4e-805bc21a66ee" message="print:: #[payload]"/>
+	</flow>
+	<flow name="choicescattergatherFlow" doc:id="fdf78028-1cea-4aa7-ac91-070cab9a8cdd" >
+		<http:listener doc:name="Listener" doc:id="79709d26-de26-4858-bb1f-997d3208f5db" config-ref="HTTP_Listener_config" path="/api"/>
+		<set-variable value='#["canada"]' doc:name="Set Variable" doc:id="8548e1f9-d3a5-4b88-a76c-86d2be3b7c8f" variableName="city"/>
+		<choice doc:name="Choice" doc:id="d5812f9b-525a-4232-844b-bfc608609b7c" >
+			<when expression='#[vars.city == "hyderabad"]'>
+				<ee:transform doc:name="Transform Message" doc:id="977a2a1c-1221-46a0-9379-33e304da3531" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"success"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[vars.city == "canada"]'>
+				<ee:transform doc:name="Transform Message" doc:id="8eb623cb-836e-4d4a-b05d-35b97c60c8d2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"second success"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="89a2e1dd-a914-4c3c-aad4-d07ea330319e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"failure"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="choicescattergatherFlow2" doc:id="8807383b-8bb4-4683-9b7c-05428a070a92" >
+		<http:listener doc:name="Listener" doc:id="94a88e9b-25fd-4d49-b81e-d7823a1fd68e" config-ref="HTTP_Listener_config" path="/apits" />
+		<set-payload value='#["London"]' doc:name="Set Payload" doc:id="5462a42b-a5e4-4e69-b6dc-fe95e140762a" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="73e5eec5-3b06-4d7b-a2c1-c38885f6d08e" >
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="7647bcf4-1f0b-4b8b-b995-69bf4c193d2a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"First target" ++  payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="a25e18ed-1525-4071-87f4-f01bbb6b8d41" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Third target" ++ payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+			<route>
+				<try doc:name="Try" doc:id="f7ed8656-31d5-4f8c-a166-bb4ea527537f" >
+					<ee:transform doc:name="Transform Message" doc:id="cf1c7225-90e8-49a5-bd54-535dbf3d4791">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+2/0]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="07e547a7-3115-4cd3-a063-f67ea129d60c" >
+							<logger level="INFO" doc:name="Logger" doc:id="e1eeae71-95d8-4edc-a570-161913f4645a" />
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="19c0f64c-74ac-4fd2-9c5c-8f9b8ef75e39" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload[0].payload ++ payload[1].payload 
+//payload[0]entireobjectinthatchoosepayloadso.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2b6ff6ea-4dc7-48ad-9c10-baa36de9b177" message="print:: #[payload]" />
+	</flow>
+</mule>
